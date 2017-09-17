@@ -1,0 +1,151 @@
+package com.nextgate.chriscoyle.service;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.nextgate.chriscoyle.model.SearchDao;
+import com.nextgate.chriscoyle.service.ArtistInformation;
+import com.nextgate.chriscoyle.service.SearchService;
+import com.nextgate.chriscoyle.webservice.MusicServiceStub.ArtistInfo;
+import com.sun.corba.se.impl.orbutil.graph.Node;
+import java.text.DateFormat;
+
+@Service
+public class SearchServiceImpl implements SearchService {
+
+	@Autowired
+	private SearchDao searchDao;
+	private List<ArtistInformation> artistInfoList = new ArrayList<ArtistInformation>();
+
+	
+	public SearchDao getSearchDao(){
+
+		return this.searchDao;
+	}
+
+	public void setSearchDao(SearchDao searchDao){
+
+		this.searchDao = searchDao;
+	}
+
+	public List<ArtistInformation> getArtistinfoList(){
+
+		return this.artistInfoList;
+	}
+
+	@Override
+	public void getSearchResults(String field, String userInput) throws SQLException {
+		System.out.println(field + "-------------------------------------------------------------------------");
+		if(this.artistInfoList.size() > 0){
+			System.out.println("Removing Previous Search Results...");
+			for(int i = 0; i < this.artistInfoList.size(); i++){
+
+				artistInfoList.remove(i);
+			}
+			System.out.println("Removal Complete");
+		}
+
+		Date date;
+		DateFormat df = DateFormat.getDateInstance();
+		ArtistInfo[] artistInfo = searchDao.getSearchResults(field, userInput);
+
+		if(artistInfo == null){
+			System.out.println("Artist Info Empty:");
+			// do nothing 		
+		}
+		else{
+
+			for (int i = 0; i < artistInfo.length; i++) {
+				
+				ArtistInfo ai = artistInfo[i];
+
+				if(ai != null){
+
+					String name = ai.getName();										// Get Name From musicStub.ArtistInfo
+					date = ai.getDob();												// Get Dob  From musicStub.ArtistInfo
+					String dob = df.format(date).toString();						// Format The Date To Get Rid Of The Time 
+					String sex = ai.getSex();										// Get Sex From musicStub.ArtistInfo
+					String albumName = ai.getAlbum_name();							// Get AlbumName From musicStub.ArtistInfo
+					String releaseYear = Integer.toString(ai.getRelease_year());	// Get ReleaseYear From musicStub.ArtistInfo
+					String recordCompany = ai.getRecord_company();					// Get RecordCompany From musicStub.ArtistInfo
+
+					setArtistInformation(name, dob, sex, albumName, releaseYear, recordCompany); // Set The ArtistInformation Bean With The Returned Data
+				}
+			}
+			
+			if(field.equals("singer")){
+				removeDuplicates();
+			}
+		}	
+	}
+
+	private void setArtistInformation(String name, String dob, String sex, String album, String releaseYear, String recordCompany){
+
+		ArtistInformation artistInfo = new ArtistInformation();
+
+		artistInfo.setSingerName(name);
+		artistInfo.setDob(dob);
+		artistInfo.setSex(sex);
+		artistInfo.setAlbum(album);
+		artistInfo.setReleaseYear(releaseYear);
+		artistInfo.setCompany(recordCompany);
+
+		System.out.println("Returned The Folowing : " + " " + name + " " + dob + " " + sex + " " +  album + " " + releaseYear + " " + recordCompany );
+
+		artistInfoList.add(artistInfo);
+	}
+	
+	
+	private void removeDuplicates(){
+		System.out.println("In Duplicates");
+		
+		int size = artistInfoList.size();
+		for(int i = 1; i < size; i++){
+			
+			System.out.println("In Remove Duplicates:" + " " + "ArtistInfoSize:" + artistInfoList.size() + " " + "Iteration: " + i );
+			
+			for(int k = 0; k < artistInfoList.size(); k++){
+				
+				System.out.println(artistInfoList.get(k).getSingerName() + " " + artistInfoList.get(k).getDob() + " " + artistInfoList.get(k).getSex() + " " + artistInfoList.get(k).getAlbum() + " " + artistInfoList.get(k).getReleaseYear());
+				
+				
+			}
+			
+			String singerName = artistInfoList.get(i).getSingerName();
+			int j = i - 1;
+			
+			while(j <= artistInfoList.size() && artistInfoList.get(j + 1).getSingerName().equals(singerName)){
+				
+				j++;
+				artistInfoList.remove(j);
+				size = size -1;
+			}
+		}	
+	}
+	
+	/*
+	private void x(){
+		
+		ListIterator<ArtistInformation> iter =  artistInfoList.listIterator();
+		
+		for(int i = 1; i < artistInfoList.size(); i++){
+			
+			String singerName = artistInfoList.get(i).getSingerName();
+			
+			while
+			
+		}
+	
+		
+		
+	}
+	*/
+	
+}

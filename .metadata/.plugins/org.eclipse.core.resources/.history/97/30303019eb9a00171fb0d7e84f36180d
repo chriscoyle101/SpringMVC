@@ -1,0 +1,39 @@
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<!DOCTYPE html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Welcome</title>
+
+<link href="<c:url value="/resources/css/search.css" />"
+	rel="stylesheet">
+<link href="<c:url value="/resources/css/radioButton.css" />"
+	rel="stylesheet">
+<script src='https://use.edgefonts.net/amaranth.js'></script>
+</head>
+<html>
+<body>
+	<!--<center>Welcome ${loggedInUser}</center>-->
+<body>
+	<div align="center">
+		<br> <br> <br>
+		<div class="text">Music at your finger tips...</div>
+		<br> <br> <br> 
+		<div >
+			<form method="post" action="searchResults">
+			
+				<input class="button" placeholder="Search..." />
+					
+				<input type="radio" name="action" id="size_1" value="singer" checked=""/>					<label for="size_1">Artist</label> 
+				
+				<input type="radio" name="action" id="size_2" value="album_name"  class="center-align"/>	<label for="size_2">Album</label> 
+				
+				<input type="submit" value="Submit" class="login-submit" />
+		</form>
+	</div>
+	</div>
+</body>
+</html>
+

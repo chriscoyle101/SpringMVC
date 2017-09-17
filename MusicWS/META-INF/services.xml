@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file was auto-generated from WSDL -->
+<!-- by the Apache Axis2 version: 1.6.2  Built on : Apr 17, 2012 (05:33:49 IST) -->
+<serviceGroup>
+    <service name="MusicService">
+        <messageReceivers>
+            <messageReceiver mep="http://www.w3.org/ns/wsdl/in-out" class="music.MusicServiceMessageReceiverInOut"/>
+        </messageReceivers>
+        <parameter name="ServiceClass">music.MusicService</parameter>
+        <parameter name="useOriginalwsdl">true</parameter>
+        <parameter name="modifyUserWSDLPortAddress">true</parameter>
+        <operation name="getByAlbum" mep="http://www.w3.org/ns/wsdl/in-out" namespace="urn:Music">
+            <actionMapping>urn:Music:musicPort:getByAlbumRequest</actionMapping>
+            <outputActionMapping>urn:Music:musicPort:getByAlbumResponse</outputActionMapping>
+            <faultActionMapping faultName="ErrorFault">urn:Music:musicPort:getByAlbum:Fault:ErrorFault</faultActionMapping>
+            <faultActionMapping faultName="ErrorFault_Exception">urn:Music:musicPort:getByAlbum:Fault:ErrorFault</faultActionMapping>
+        </operation>
+        <operation name="getBySinger" mep="http://www.w3.org/ns/wsdl/in-out" namespace="urn:Music">
+            <actionMapping>urn:Music:musicPort:getBySingerRequest</actionMapping>
+            <outputActionMapping>urn:Music:musicPort:getBySingerResponse</outputActionMapping>
+            <faultActionMapping faultName="ErrorFault">urn:Music:musicPort:getBySinger:Fault:ErrorFault</faultActionMapping>
+            <faultActionMapping faultName="ErrorFault_Exception">urn:Music:musicPort:getBySinger:Fault:ErrorFault</faultActionMapping>
+        </operation>
+    </service>
+</serviceGroup>

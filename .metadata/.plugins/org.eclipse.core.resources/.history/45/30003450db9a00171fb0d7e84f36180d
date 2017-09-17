@@ -1,0 +1,68 @@
+package com.nextgate.chriscoyle.controller;
+
+import java.sql.SQLException;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+
+import com.nextgate.chriscoyle.view.LoginBean;
+import com.nextgate.chriscoyle.view.SearchBean;
+import com.nextgate.chriscoyle.service.LoginDelegate;
+
+@Controller
+public class HelloController {
+	
+	//@Autowired
+	private LoginDelegate loginDelegate = new LoginDelegate();
+
+	@RequestMapping("/welcome")
+	public ModelAndView helloWorld() {
+
+		ModelAndView model = new ModelAndView("HelloPage");
+		model.addObject("msg","hello world");
+
+		return model;
+	}
+	
+	@RequestMapping(value="/login.html",method=RequestMethod.GET)
+	public ModelAndView displayLogin(){
+
+		ModelAndView model = new ModelAndView("login");
+		return model;
+	}
+	
+	@RequestMapping(value="/search",method=RequestMethod.POST)
+	public ModelAndView executeLogin(@ModelAttribute("loginBean")LoginBean loginBean) throws SQLException{
+
+		System.out.println(loginBean.getUsername() + loginBean.getPassword());
+		
+		ModelAndView model= null;
+		boolean isValidUser = loginDelegate.isValidUser(loginBean.getUsername(), loginBean.getPassword());
+
+		if(isValidUser == true){
+			System.out.println("User Login Successful");
+			//request.setAttribute("loggedInUser", loginBean.getUsername());
+			model = new ModelAndView("redirect:/search");
+			//model.addObject("searchBean", searchBean);
+		}
+		else{
+			
+			model = new ModelAndView("redirect:/login");
+			//request.setAttribute("message", "Invalid credentials!!");
+		}
+		return model;
+	}
+	
+	
+
+}

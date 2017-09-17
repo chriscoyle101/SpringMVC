@@ -1,0 +1,16 @@
+1505514136586	Move 'resources' to 'WEB-INF'
+1505514999869	Rename package 'com.nextgate.chriscoye.delegate'
+1505515677724	Delete element
+1505515729281	Move compilation units
+1505515735632	Delete element
+1505516112472	Rename resource 'welcome.jsp'
+1505519258157	Delete element
+1505519320678	Delete element
+1505575873539	Move 'resources' to 'WebContent'
+1505578618291	Move 3 resources to 'jsp'
+1505579294867	Rename type 'SearchDAO'
+1505653304500	Delete element
+1505663977791	Rename type 'HelloController'
+1505666933634	Rename type 'LoginController'
+1505667196524	Rename type 'HelloController'
+1505680835745	Delete element

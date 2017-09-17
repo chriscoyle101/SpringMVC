@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This TragetNameSpace Relates Directly To Our Java Package-->
+<wsdl:definitions name="MusicDefinitions"
+    targetNamespace="urn:Music" 
+    xmlns:music="urn:Music"
+    xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+
+
+  <wsdl:documentation>
+      This is a Service Which Returns Music Records. 
+  </wsdl:documentation>
+  
+  
+    <!--
+    In Relation To The WSDL Below The Types Created
+    In This Section Are Here To Define The Input And
+    Return Type Of The Messages In The WSDL. Their 
+    Relation To Java Is Explained Below  
+    -->
+  
+  <wsdl:types>
+    <!-- This TragetNameSpace Relates Directly To Our Java Package-->
+    <xsd:schema
+    targetNamespace="urn:Music"
+    xmlns:music="urn:Music"
+    elementFormDefault="qualified"
+    xmlns="http://www.w3.org/2001/XMLSchema"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+      <!--
+      WSDL/Java Link:
+      Creates Class ArtistInfo and Initialises The Class With
+      Attributes:
+        String name
+        Date dob
+        String sex
+        String album_name
+        int release_year
+        String record_company
+      -->
+      <xsd:complexType name="ArtistInfo"> 
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="dob" type="xsd:date"/>
+          <xsd:element name="sex" type="xsd:string"/>
+          <xsd:element name="album_name" type="xsd:string"/> 
+          <xsd:element name="release_year" type="xsd:int"/>
+          <xsd:element name="record_company" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      
+      <!--
+      WSDL/Java Link:
+      Creates Class ArtistInformation and Initialises The Class With
+      Attributes:
+        ArtistInformation
+      Of Type:
+        ArtistInfo Object
+      So In Java This Would Create An Instance Of ArtistInfo In 
+      Class ArtistInformation
+      -->
+      <xsd:element name="ArtistInformation">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" name="ArtistInformation" type="music:ArtistInfo"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      
+      <!--     
+      WSDL/Java Link
+      The Following Elements Are Translated Into Classes
+      Within The Java Code:
+      Class: 
+          Artist
+          SingerName
+          AlbumName
+          ErrorFault
+      -->
+      <xsd:element name="Artist" type="music:ArtistInfo"/>
+      <xsd:element name="SingerName" type="xsd:string"/>
+      <xsd:element name="AlbumName" type="xsd:string"/>
+      <xsd:element name="ErrorFault" type="xsd:string"/>
+   </xsd:schema>
+ </wsdl:types>
+
+
+  <!--
+  The Message Element Describes The Data 
+  Being Exchanged Between The Web Service 
+  And The Client. Each Message Below Has 
+  An Input And Output. The Input Describes 
+  The Paramaters For The Web Service And The 
+  Outputs Describe The Return Data From The Web 
+  Service. The part parameter references the 
+  concrete types defined in the XSD i.e.
+  Element="ComposerName" In Part Below References 
+  Element=ComposerName" In The Types Section Above
+  
+  WSDL/Java Link
+  In The getByComposerRequest Message The "name" 
+  Attribute Defines The Name of The Java Parameter
+  In The: getByCompose, getByDisk and getTrackDetails 
+  Methods And The Element Defines The Type Of That 
+  Attribute E.g
+         wsdl                    Java
+  getByComposerRequest     getByComposerName(ComposerName, composerName)
+  
+  -->
+  <!--Start Messages-->
+  <wsdl:message name="getByAlbumRequest"> 
+    <wsdl:part name="AlbumName" element="music:AlbumName"/> <!-- -->
+  </wsdl:message>
+
+  <wsdl:message name="getBySingerRequest">
+    <wsdl:part name="SingerName" element="music:SingerName"/> 
+  </wsdl:message>
+
+  <wsdl:message name="getArtistInformationResponse">
+    <wsdl:part name="ArtistDetails" element="music:ArtistInformation"/>
+  </wsdl:message>
+
+  <wsdl:message name="ErrorFault">
+    <wsdl:part name="fault" element="music:ErrorFault"/>
+  </wsdl:message>
+  <!--End Messages-->
+  
+  
+  <!--
+  The PortType Combines One Request And Response Message
+  Into A Single Request/Response Operation. The Web Service
+  Recieves A Message And Sends A Response. The Operation 
+  Element Therefor Has One Input And Output Element. The 
+  Error Fault Element Has Been Specified To Encapsulate 
+  Error
+  -->
+  <!--Start Defining Port Type-->
+  <wsdl:portType name="musicPort">
+      <!--Start Define Port Operation-->
+      <wsdl:operation name="getByAlbum">
+          <wsdl:input message="music:getByAlbumRequest"/>
+          <wsdl:output message="music:getArtistInformationResponse"/>
+          <wsdl:fault name="ErrorFault" message="music:ErrorFault"/>
+      </wsdl:operation>
+    <!--End Define Port Operation-->
+    <!--Start Define Port Operation-->
+      <wsdl:operation name="getBySinger">
+          <wsdl:input message="music:getBySingerRequest"/> <!-- References Messages Section-->
+          <wsdl:output message="music:getArtistInformationResponse"/>
+          <wsdl:fault name="ErrorFault" message="music:ErrorFault"/>
+      </wsdl:operation>
+    <!--End Define Port Operation-->
+  </wsdl:portType>
+  <!--End Defining Port Type-->
+    
+  <!--
+  This Binding Provides Details On How A PortType Oprtation Will
+  Actually Be Transmitted Over The Wire. The Bindings Can Be Made
+  Available Via Multiple Transports: In This Case Our Transport Tag
+  Defines HTTP. 
+  
+  The Operation Element Indicates The Binding Of The getByComposer
+  Operation To The Document Style SOAP Operation. And The Body
+  Element Allows Us To Specify The Details Of The Input And Output 
+  Messages. In Our Case, The Soap Body Specifies The SOAP Encoding
+  Style And The Music Namespace Associated With Our MusicServce
+  -->
+  <!--Start Binding-->
+  <wsdl:binding name="musicBinding" type="music:musicPort">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http"  style="document"/>
+    <!--Start Operation One-->
+    <wsdl:operation name="getByAlbum">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body
+          encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+          namespace="urn:Music"
+          use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body
+          encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+          namespace="urn:Music"
+          use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ErrorFault">
+        <soap:fault use="literal" name="ErrorFault"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <!--End Operation One-->
+    <!--Start Operation Two-->
+    <wsdl:operation name="getBySinger">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body
+          encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+          namespace="urn:Music"
+          use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body
+          encodingStyle="http://schemas.xmlsoap.org/soap/encoding/"
+          namespace="urn:Music"
+          use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="ErrorFault">
+        <soap:fault
+          name="ErrorFault"
+          use="literal" />
+      </wsdl:fault>
+    </wsdl:operation>
+    <!--End Operation Two-->
+  </wsdl:binding>
+  <!--End Binding-->
+   
+  <!--
+  The Service Element Defines The Ports Supported By
+  Our Music Web Service. The Service Element Is Essentially
+  A Collection Of Ports. Service Elements Define Where To 
+  Access The Service, Through Which Port To Access The Service 
+  How The Communication Messages Are Defined. The Documentation 
+  Element Is Useful As It Provides Human-Readable Documentation
+  
+  The Port Element Defines Our Endpoint By Specifying A
+  Single Address For Our Binding. Our Port Element Has 
+  Two Attriubtes: Name And Binding. The Binding Attribute
+  References Our Binding Above. The Name Can Be Whatever We
+  Want.
+  -->
+  <!--Start Service-->
+  <wsdl:service name="MusicService">
+    <wsdl:documentation>WSDL File for MusicService</wsdl:documentation>
+      <wsdl:port name="MusicPort" binding="music:musicBinding">
+          <soap:address location="http://127.0.0.1:8080/axis2/services/MusicService"/>
+      </wsdl:port>
+  </wsdl:service>
+  <!--End Service-->
+</wsdl:definitions>

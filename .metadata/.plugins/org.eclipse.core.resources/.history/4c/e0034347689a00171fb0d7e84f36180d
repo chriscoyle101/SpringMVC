@@ -1,0 +1,5 @@
+package com.nextgate.chriscoyle.service;
+
+public class LoginDelegate {
+
+}

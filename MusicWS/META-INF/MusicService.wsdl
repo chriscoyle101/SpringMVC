@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="MusicDefinitions" targetNamespace="urn:Music" xmlns:music="urn:Music" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/">
+<wsdl:documentation>
+      This is a Service Which Returns Music Records. 
+</wsdl:documentation>
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="urn:Music" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:music="urn:Music" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+      <xsd:complexType name="ArtistInfo"> 
+        <xsd:sequence>
+          <xsd:element name="name" type="xsd:string"/>
+          <xsd:element name="dob" type="xsd:date"/>
+          <xsd:element name="sex" type="xsd:string"/>
+          <xsd:element name="album_name" type="xsd:string"/> 
+          <xsd:element name="release_year" type="xsd:int"/>
+          <xsd:element name="record_company" type="xsd:string"/>
+        </xsd:sequence>
+      </xsd:complexType>
+      <xsd:element name="ArtistInformation">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element maxOccurs="unbounded" name="ArtistInformation" type="music:ArtistInfo"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="Artist" type="music:ArtistInfo"/>
+      <xsd:element name="SingerName" type="xsd:string"/>
+      <xsd:element name="AlbumName" type="xsd:string"/>
+      <xsd:element name="ErrorFault" type="xsd:string"/>
+   </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="getBySingerRequest">
+    <wsdl:part name="SingerName" element="music:SingerName">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getArtistInformationResponse">
+    <wsdl:part name="ArtistDetails" element="music:ArtistInformation">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getByAlbumRequest">
+    <wsdl:part name="AlbumName" element="music:AlbumName">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ErrorFault">
+    <wsdl:part name="fault" element="music:ErrorFault">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="musicPort">
+    <wsdl:operation name="getByAlbum">
+      <wsdl:input message="music:getByAlbumRequest">
+    </wsdl:input>
+      <wsdl:output message="music:getArtistInformationResponse">
+    </wsdl:output>
+      <wsdl:fault name="ErrorFault" message="music:ErrorFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getBySinger">
+      <wsdl:input message="music:getBySingerRequest">
+    </wsdl:input>
+      <wsdl:output message="music:getArtistInformationResponse">
+    </wsdl:output>
+      <wsdl:fault name="ErrorFault" message="music:ErrorFault">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="musicBinding" type="music:musicPort">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getByAlbum">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:Music"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:Music"/>
+      </wsdl:output>
+      <wsdl:fault name="ErrorFault">
+        <soap:fault name="ErrorFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getBySinger">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:Music"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="urn:Music"/>
+      </wsdl:output>
+      <wsdl:fault name="ErrorFault">
+        <soap:fault name="ErrorFault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="MusicService">
+<wsdl:documentation>WSDL File for MusicService</wsdl:documentation>
+    <wsdl:port name="MusicPort" binding="music:musicBinding">
+      <soap:address location="http://127.0.0.1:8080/axis2/services/MusicService"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

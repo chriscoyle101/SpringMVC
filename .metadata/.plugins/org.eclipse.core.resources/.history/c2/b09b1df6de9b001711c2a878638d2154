@@ -1,0 +1,85 @@
+package com.nextgate.chriscoyle.model;
+
+import org.apache.axis2.AxisFault;
+import org.springframework.stereotype.Repository;
+
+import com.nextgate.chriscoyle.webservice.MusicServiceStub;
+import com.nextgate.chriscoyle.webservice.MusicServiceStub.AlbumName;
+import com.nextgate.chriscoyle.webservice.MusicServiceStub.ArtistInfo;
+import com.nextgate.chriscoyle.webservice.MusicServiceStub.ArtistInformation;
+import com.nextgate.chriscoyle.webservice.MusicServiceStub.SingerName;
+
+@Repository 
+public class SearchDaoImpl implements SearchDao {
+	
+	private MusicServiceStub mServiceStub;
+	
+	public SearchDaoImpl() throws AxisFault{
+		
+		this.mServiceStub = new MusicServiceStub();
+	}
+	
+	@Override
+	public ArtistInfo[] getSearchResults(String field, String userInput){
+		System.out.println("In Data Access Object:");
+		System.out.println("Method getSearchResults: " + "Field = " + " " + field + " User Input= " + " " + userInput);
+		
+		ArtistInfo[] ai;
+		String trackRows = "";
+
+		try{
+			if (field.equals("singer")){
+				System.out.println("in Action Performed Case Singer Button");
+				ai = getField("singer", userInput); // singer name
+				System.out.println("Singer Name Returned. About to Call DisplayResults...........");
+				
+				System.out.println("Returned Results Size" + " " + ai.length);
+				
+				return(ai);
+			}
+			else if (field.equals("album_name")){
+				System.out.println("in Action Performed Case Action Button");
+				System.out.println("in singer case");
+				ai = getField("album_name", userInput); //album name
+				return(ai);
+			}			
+		}catch(Exception exception){
+			String error = exception.getMessage();
+			if (error == null) error = exception.toString();
+			error = "could not get tracks - " + error;
+			trackRows += error;
+		}
+		return null;	
+	}
+	
+	@Override
+	public ArtistInfo[] getField(String field, String useInput) throws Exception {
+
+		System.out.println("Method getField: " + "Field = " + " " + field + " User Input= " + " " + useInput);
+		
+		ArtistInformation artistInformationRef;
+		ArtistInfo[] artistInfo;
+		
+		switch(field){
+		case"singer":
+			System.out.println("in singer case");
+        	SingerName singerName = new SingerName();							// Create The Composer Object
+        	singerName.setSingerName(useInput);									// Then Set The Composers Name On That Object
+        	artistInformationRef = mServiceStub.getBySinger(singerName);		// Now Make Call To MusicService Passing The Composer Object
+        	System.out.println("Under artistInformationRef");
+        	artistInfo = artistInformationRef.getArtistInformation();			// Extract Track Details From Returned TrackDetails Object
+			return artistInfo;													// Return The Track Details Array
+		case "album_name": 	
+			System.out.println("in album case");
+			System.out.println("in album case");
+			AlbumName albumName = new AlbumName();								// Create The DiskBumber Object
+			albumName.setAlbumName(useInput);									// Then Set The DiskNumber On That Object
+			artistInformationRef = mServiceStub.getByAlbum(albumName);			// Now Make Call To MusicService Passing The DiskNumber Object
+			artistInfo = artistInformationRef.getArtistInformation();			// Extract Track Details From Returned TrackDetails Object
+			System.out.println("DAO " + artistInfo.length);
+			return artistInfo;	
+														// Return The Track Details Array
+		}
+		return null;
+	}
+}

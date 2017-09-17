@@ -1,0 +1,99 @@
+package com.nextgate.chriscoyle.controller;
+
+import java.sql.SQLException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.nextgate.chriscoyle.service.LoginDelegate;
+import com.nextgate.chriscoyle.view.LoginBean;
+
+@Controller // Controller Annotation Tells Spring To Consider This Class As A Bean
+public class LoginController {
+	
+	@Autowired // Uses Springs Inversion of Control (IoC) Mechanism To Automatically Inject References To Classes. We Don Need The new Keyword
+	private LoginDelegate loginDelegate;
+	
+	/**
+	 * Method displayLogin()
+	 * This Method Services A Request To View The Login Screen
+	 * The [@]RequestMapping Annotation Describes The URL And
+	 * Request Type This Method Services e.g:
+	 * 
+	 * 		URL: localhost:8024/WebApplication/login.html
+	 * 		With HTML Form Method "GET" 
+	 * 
+	 * Will Get Mapped To This Method By The Dispatcher-Servlet.
+	 * 
+	 * 1. Create A ModelAndView Object And Specify To The 
+	 * 	  Constructor The WebPage(i.e. JSP File) You Want To 
+	 * 	  Return To The Browser.
+	 * 
+	 * 2. Return The Model Reference Which Describes The JSP File 
+	 * 	  The Dispatcher-Servlet(aka Front Controller) Should 
+	 * 	  Fetch In Order To Return It To The Browser
+	 * @return 
+	 */
+	@RequestMapping(value="/login.html",method=RequestMethod.GET)
+	public ModelAndView displayLogin(){
+
+		ModelAndView model = new ModelAndView("login");	// 1
+		return model;									// 2
+	}
+	
+	/**
+	 * Method executelogin()
+	 * This Method Services A Request To View The Search Screen
+	 * Or Login Screen The [@]RequestMapping Annotation Describes 
+	 * The URL And Request Type This Method Services e.g:
+	 * 
+	 * 		URL: localhost:8024/WebApplication/search.html
+	 * 		With HTML Form Method "POST" (See JSP Files)
+	 * 
+	 * Will Get Mapped To This Method By The Dispatcher-Servlet.
+	 * 
+	 * The [@]ModelAttribute Annotation Captures The Values The 
+	 * User Enters Into The Login Form And Updates Those Values
+	 * In The LoginBean Object. 
+	 * NOTE:
+	 * 		The Caveat Is The "name" Attribute In The HTML Form
+	 * 		input Tag Must Exactly Match The Instance Variable 
+	 * 		Name In The LoginBean Object For This To Work e.g:
+	 * 			JAVA						HTML	
+	 * 	private String username;	<input name="username" .../>
+	 *  
+	 * 1. Create A ModelAndView Object
+	 * 
+	 * 2. Send The Users username and password To The Database To
+	 * 	  Be Verified
+	 * 
+	 * 3. If The Database Returns True...
+	 * 
+	 * 4. Then Pass To The ModelAndView Constructor "search"
+	 *    Specifying That The Front Controller That The search.jsp
+	 *    File Should Be Fetched And Displayed To The Browser
+	 *    
+	 * 5. Else If The User Is Not Valid Display The Login Screen
+	 *    Again
+	 * @return 
+	 */
+	@RequestMapping(value="/search.html",method=RequestMethod.POST)
+	public ModelAndView executeLogin(@ModelAttribute("loginBean")LoginBean loginBean) throws SQLException{
+
+		ModelAndView model= null;																			// 1
+		boolean isValidUser = loginDelegate.isValidUser(loginBean.getUsername(), loginBean.getPassword());	// 2
+
+		if(isValidUser == true){																			// 3
+			
+			model = new ModelAndView("search");																// 4
+		}
+		else{
+			model = new ModelAndView("login");																// 5
+		}
+		return model;
+	}
+}

@@ -1,0 +1,32 @@
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class x {
+	
+	public static void main(String[] args){
+		
+		List<Integer> artistInfoList = new ArrayList<Integer>();
+		
+		for(int i = 10; i != 0; i--){
+			
+			artistInfoList.add(i);
+			
+		}
+		
+		for(int i = 0; i < artistInfoList.size(); i ++){
+			 
+			System.out.println(artistInfoList.get(i));
+		}
+		
+		for(int i = 0; i < artistInfoList.size(); i++ ){
+			
+			artistInfoList.remove(i);
+		}
+		
+		System.out.println(artistInfoList.size());
+		
+		
+	}
+
+}

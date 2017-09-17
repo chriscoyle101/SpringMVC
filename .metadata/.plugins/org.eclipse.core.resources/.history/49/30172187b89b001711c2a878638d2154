@@ -1,0 +1,181 @@
+package music;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.Arrays;
+
+//import music.MusicServiceStub.ArtistInfo;
+
+public class MusicService extends MusicServiceSkeleton {
+	
+	private final static String databaseHost = "jdbc:mysql://localhost:3306/ng_music";
+	private final static String databaseName = "ng_music";
+	private final static String databasePassword = "lf56yWb58v";
+	private final static String databaseUser = "Chris";
+	
+	
+	/**
+	 * Method getBySinger
+	 * @param singerName
+	 * 
+	 * Method getBySinger() Takes Parameter singerName Which Is Passed In 
+	 * From The WebApplication. The singerName Was Set On The Client Side Before This
+	 * Reference Was Passed In So Now We Can Say getComposerName(). This Method
+	 * Makes A Call To getByField() Which Fetches The Track Details From The 
+	 * Database. When They Details Are Returned To Here, This Method Sets Those
+	 * Details In Class Track Details And Then Returns The Reference To TrackDetails
+	 * So That The Client(WebApplication) Can Then Say (get) name, sex, dob etc.
+	 * 
+	 * 1. The Reference To The SingerName Object Is Passed In To Get The Singers Name
+	 *    (Which Was Set In The Client). This Supports Partial Matches e.g User Can 
+	 *    Search "MIC" To Return Artists With These Letters In Their Name
+	 *    
+	 * 2. Call getByField() And Store The List Of ArtistInfo Objects It Returns In An ArtistInfo
+	 *    Object Array! So ArtistInfo[] Will Store {AI, AI, AI,AI} Objects
+	 * 
+	 * 3. Create A ArtistInformation Object So That We Can Set The Returned ArtistInfo Details 
+	 * 
+	 * 4. Set The Returned ArtistInfo Details
+	 * 
+	 * 5. Now Return The ArtistInformation Object Reference (Which Now Holds Information About
+	 *    The ArtistInfo Details We Just Set) So That The Client Can Use This Reference To Get
+	 *    Those Details
+	 */
+	public ArtistInformation getBySinger(SingerName singerName) throws ErrorFaultException{
+		
+		String singer = singerName.getSingerName();	  						// 1  
+		ArtistInfo[] artistInfo = getByField("name", singer);   			// 2
+		ArtistInformation artistInformationRef = new ArtistInformation();	// 3
+		artistInformationRef.setArtistInformation(artistInfo);			  	// 4
+		return artistInformationRef;										// 5 																	
+	}				
+	
+	
+	/**
+	 * Method getByAlbum()
+	 * Method getByAlbum() Takes Parameter albumName Which Is Passed In 
+	 * From The Client(WebApplication). The albumName Was Set On The Client 
+	 * Side Before This Reference Was Passed In So Now We Can Say getAlbumName(). 
+	 * This Method Makes A Call To getByField() Which Fetches The ArtistInfo Details From The 
+	 * Database. When They Details Are Returned To Here, This Method Iterates
+	 * Over The ArtistInfo Details And Extracts The ArtistInfo That Match The Value
+	 * Entered By The User And Stores Them In A New Array. This Method Sets Those
+	 * Details In Class ArtistInformation And Then Returns The Reference To ArtistInformation
+	 * So That The Client Can Then Say (get) name, dob, sex etc.
+	 * 
+	 * 1. The Reference To The AlbumName Object Is Passed In To Get The Album Name
+	 *    (Which Was Set In The Client).
+	 * 
+	 * 2. Call getByField() And Store The List Of ArtistInfo Objects It Returns In A ArtistInfo
+	 *    Object Array
+	 *      
+	 * 3. Initialise A Temporary ArtistInfo Array To The Size Of The Returned artistDetailObjects
+	 *    Array.
+	 * 
+	 * 4. Iterate Over The artistDetailObjects Array And Look For ArtistInfo Objects Whos 
+	 *    Album Names Match The Album Name The Use Passed In From The Client(WebApplication). 
+	 * 
+	 * 5. If There Is A Match Then Assign That ArtistInfo Object To The Temporary Array
+	 *    Because We Have Just Found An Album The User Is Interested In
+	 *    
+	 * 6. Once The Loop Is Compete Copy The ArtistInfo Objects From The Temp Array To The
+	 *    Results Array.
+	 *    
+	 * 7. Create An ArtistInformation Object So That We Can Set The Resultant Artist Information 
+	 * 
+	 * 8. Set The Resultant ArtistInfo Details In The ArtistInformation Object
+	 * 
+	 * 9. Now Return The TrackDetails Object Reference (Which Now Holds Information About
+	 *    The Track Details We Just Set) So That The Client Can Use This Reference To Get
+	 *    Those Details
+	 */ 
+	public ArtistInformation getByAlbum(AlbumName albumName) throws ErrorFaultException{ 
+		
+		String albumNme = albumName.getAlbumName(); 																											// 1
+		ArtistInfo[] artistDetailObjects = getByField("album_name", albumNme);																					// 2
+	
+		int j = 0; 
+		ArtistInfo[] temp = new ArtistInfo[artistDetailObjects.length];																							// 3
+		for(int i = 0; i < artistDetailObjects.length; i++){																									// 4
+			//System.out.println("Album Name: " + artistDetailObjects[i].getAlbum_name() + " " + " Album Param = " + albumName.getAlbumName());
+			if(artistDetailObjects[i].getAlbum_name().toString().toLowerCase().trim().equals(albumName.getAlbumName().toString().toLowerCase().trim()) || 
+			   artistDetailObjects[i].getAlbum_name().toString().toLowerCase().trim().contains(albumName.getAlbumName().toString().toLowerCase().trim())){ 		// 5
+			
+				temp[j] = artistDetailObjects[i];																												// 5
+				j++;
+			}
+		}
+		ArtistInfo[] results = Arrays.copyOf(temp, j);																											// 6
+		
+		ArtistInformation artistInfo = new ArtistInformation();																									// 7
+		artistInfo.setArtistInformation(results);																												// 8
+		return artistInfo;																																		// 9
+	}
+	
+
+	
+	private ArtistInfo[] getByField(String field, String value) throws ErrorFaultException {
+		try {
+			if (value.length() == 0)
+				throw (new Exception(field + " is empty"));
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+			//String databaseDesignation = "jdbc:mysql://" + databaseHost + "/" + databaseName + "?user=" + databaseUser + "&password=" + databasePassword;
+			
+			
+			Connection connection = DriverManager.getConnection(databaseHost, databaseUser, databasePassword ); //databaseDesignation
+			Statement statement = connection.createStatement();
+			
+			String query2 = "SELECT" +
+					   " ng_singers.name," +
+					   " ng_singers.dob," +
+					   " ng_singers.sex," +
+					  " ng_albums.album_name," +
+					  " ng_albums.release_year," +
+					   " ng_albums.record_company" +
+					" FROM" +
+					   " ng_singers" +
+					   " INNER JOIN" +
+					      " ng_albums" + 
+					      " ON ng_singers.ng_singers_id = ng_albums.ng_singers_id" +
+					      " WHERE " + field + " LIKE '%" + value + "%'";
+						//" WHERE " + field + " LIKE '%" + " OR" + " album_name" + " LIKE '%" +  value + "%'";
+			
+			//String query = "SELECT disc, track, composer, work, title " + "FROM " + discTable + " " + "WHERE " + field
+					//+ " LIKE '%" + value + "%'";
+			
+			ResultSet result = statement.executeQuery(query2);
+			result.last();
+			int resultCount = result.getRow();
+			if (resultCount == 0){
+				System.out.println("Noting Returned");
+				throw (new Exception(field + " '" + value + "' not found"));
+			}
+
+			ArtistInfo[] artistInformation = new ArtistInfo[resultCount];
+			result.beforeFirst();
+			int resultIndex = 0;
+			while (result.next()) {
+				
+				ArtistInfo info = new ArtistInfo();
+				
+				info.setName(result.getString(1));
+				info.setDob(result.getDate(2));
+				info.setSex(result.getString(3));				
+				info.setAlbum_name(result.getString(4));				
+				info.setRelease_year(result.getInt(5));				
+				info.setRecord_company(result.getString(6));
+				
+				artistInformation[resultIndex++] = info;
+			}
+			connection.close();
+			return (artistInformation);
+		}
+		catch (Exception exception) {
+			String errorMessage = "database access error - " + exception.getMessage();
+			throw (new ErrorFaultException(errorMessage, exception));
+		}
+	}
+
+}

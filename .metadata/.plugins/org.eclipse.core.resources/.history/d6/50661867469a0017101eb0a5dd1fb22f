@@ -1,0 +1,5 @@
+package com.nextgate.chriscoyle.controller;
+
+public class HelloController {
+
+}
